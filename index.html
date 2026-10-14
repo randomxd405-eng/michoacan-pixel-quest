@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173d32">
+<title>Michoacán: La aventura del conocimiento</title>
+<style>
+:root{--green:#173d32;--leaf:#2f7658;--cream:#fff8e9;--gold:#f2c65d;--ink:#24342d;--muted:#64746b;--card:#fffdf7;--line:#e5dcc8}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#e7f1df,#fff8e9 42%,#f5e8ce);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:var(--green);color:white;padding:20px 16px 24px;text-align:center;border-bottom:5px solid var(--gold)}
+header .eyebrow{letter-spacing:.13em;text-transform:uppercase;font-size:.76rem;color:#d7e8bb;font-weight:800}
+h1{margin:7px 0;font-size:clamp(1.6rem,5vw,2.5rem);line-height:1.12}header p{margin:8px auto 0;max-width:650px;color:#f3f4e9}
+main{width:min(1000px,100% - 24px);margin:18px auto 36px}
+.status{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pill{background:white;border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-weight:750;box-shadow:0 2px 0 #d9d0bc}
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 22px #354b3010}
+.panel h2{font-size:1.15rem;margin:0 0 10px}
+.map{background:#dcebcf;border-radius:15px;padding:10px;border:1px solid #c6d9b7}
+svg{width:100%;height:auto;display:block}
+.map-pin{cursor:pointer;outline:none}.map-pin circle{transition:transform .15s,fill .15s}.map-pin:hover circle,.map-pin:focus circle{stroke:#173d32;stroke-width:4}
+.map-pin.locked{opacity:.42;cursor:not-allowed}
+.map-legend{display:flex;gap:9px;flex-wrap:wrap;font-size:.83rem;color:var(--muted);margin-top:8px}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+.locations{display:grid;gap:8px;margin-top:12px}
+.location{width:100%;text-align:left;border:1px solid var(--line);background:white;border-radius:13px;padding:11px;display:flex;gap:10px;align-items:center;color:var(--ink);font:inherit;cursor:pointer}
+.location:disabled{opacity:.5;cursor:not-allowed}.location .emoji{font-size:1.55rem}.location strong{display:block}.location small{color:var(--muted)}
+button{font:inherit}.primary{background:var(--leaf);color:white;border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.primary:disabled{opacity:.45;cursor:not-allowed}.secondary{background:white;border:1px solid var(--line);border-radius:12px;padding:10px 13px;font-weight:750;cursor:pointer;color:var(--ink)}
+.character{display:flex;gap:12px;align-items:center;background:#f7efd9;border-radius:15px;padding:12px;margin-bottom:12px}
+.avatar{display:grid;place-items:center;min-width:58px;height:58px;border-radius:18px;background:#f1d58b;font-size:2rem}
+.character p{margin:4px 0 0;line-height:1.4}
+.quest-title{font-size:1.35rem;margin:8px 0 6px}.quest-desc{line-height:1.5;color:#4c5c51}
+.answers{display:grid;gap:8px;margin:13px 0}.answer{width:100%;padding:12px;text-align:left;background:white;border:1px solid var(--line);border-radius:12px;cursor:pointer;color:var(--ink)}.answer:hover:not(:disabled){border-color:var(--leaf)}.answer:disabled{cursor:default}.answer.correct{background:#e4f5e8;border-color:#3a9860}.answer.wrong{background:#ffebe4;border-color:#d8795b}
+.feedback{padding:12px;border-radius:12px;background:#eef3e9;line-height:1.45;margin:10px 0}.feedback strong{display:block;margin-bottom:4px}
+.progress{height:8px;background:#e8e1d1;border-radius:99px;overflow:hidden;margin:10px 0 14px}.progress div{height:100%;background:var(--leaf);width:0;transition:width .2s}
+.badges{display:flex;flex-wrap:wrap;gap:7px}.badge{border-radius:999px;background:#f1e5c3;padding:7px 10px;font-size:.82rem;font-weight:750}.badge.locked{filter:grayscale(1);opacity:.5}
+.footer{text-align:center;color:var(--muted);font-size:.83rem;padding:15px}
+.modal{position:fixed;inset:0;background:#14251f99;display:none;place-items:center;padding:18px;z-index:4}.modal.show{display:grid}.modal-card{background:var(--card);border-radius:22px;padding:23px;max-width:440px;width:100%;text-align:center;box-shadow:0 15px 60px #0004}.modal-card .big{font-size:3.5rem}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.panel{padding:13px}main{width:calc(100% - 18px)}header{padding-top:17px}.status{gap:7px}.pill{font-size:.9rem}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Videojuego educativo · Prototipo 1</div>
+  <h1>🌿 Michoacán: La aventura<br>del conocimiento</h1>
+  <p>Explora lugares, ayuda a sus habitantes y descubre la riqueza cultural y natural de Michoacán.</p>
+</header>
+<main>
+  <div class="status">
+    <div class="pill">⭐ Puntos: <span id="score">0</span></div>
+    <div class="pill">🧭 Misiones: <span id="done">0</span>/<span id="total">5</span></div>
+    <button class="secondary" id="reset">↻ Reiniciar aventura</button>
+  </div>
+  <div class="layout">
+    <section class="panel">
+      <h2>🗺️ Mapa de la aventura</h2>
+      <div class="map">
+        <svg viewBox="0 0 500 390" role="img" aria-label="Mapa ilustrado de Michoacán con cinco lugares de misión">
+          <path d="M93 45 L154 26 L196 45 L238 35 L282 65 L329 56 L361 91 L405 108 L388 150 L415 190 L386 224 L399 268 L358 302 L329 342 L276 330 L242 356 L199 325 L156 335 L124 294 L86 276 L99 234 L69 201 L91 162 L68 119 Z" fill="#b9d6a8" stroke="#6f9d79" stroke-width="3"/>
+          <path d="M95 85 Q165 110 201 78 T304 97 T374 142" fill="none" stroke="#f8fff0" stroke-width="7" stroke-linecap="round"/>
+          <path d="M102 240 Q170 204 222 246 T340 263" fill="none" stroke="#8ab9d7" stroke-width="12" stroke-linecap="round"/>
+          <path d="M102 240 Q170 204 222 246 T340 263" fill="none" stroke="#d9f3fa" stroke-width="3" stroke-linecap="round"/>
+          <g fill="#4d7b52" font-size="12" font-weight="700" opacity=".8">
+            <text x="105" y="64">SIERRA</text><text x="275" y="82">BOSQUES</text><text x="250" y="290">LAGO</text>
+            <text x="110" y="310">COSTA</text>
+          </g>
+          <g id="pin-layer"></g>
+          <text x="18" y="375" fill="#46634b" font-size="11">Mapa ilustrativo · no está a escala</text>
+        </svg>
+      </div>
+      <div class="map-legend"><span><i class="legend-dot" style="background:#2f7658"></i>Misión disponible</span><span><i class="legend-dot" style="background:#b5b5b5"></i>Bloqueada</span><span>⭐ = misión completada</span></div>
+      <div class="locations" id="locations"></div>
+    </section>
+    <section class="panel" aria-live="polite">
+      <h2>🎒 Tu aventura</h2>
+      <div class="character">
+        <div class="avatar" id="avatar">🧑🏽‍🌾</div>
+        <div><strong id="guide">Conoce a Xóchitl</strong><p id="intro">¡Hola, explorador! Soy Xóchitl. Te acompañaré por Michoacán.</p></div>
+      </div>
+      <div class="progress"><div id="progressbar"></div></div>
+      <div id="mission">
+        <p class="quest-desc">Elige un lugar del mapa para comenzar tu primera misión.</p>
+        <p>💡 Consejo: lee con atención cada pregunta. ¡Aprender también es parte de la aventura!</p>
+      </div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+      <h2>🏅 Tu colección de insignias</h2>
+      <div class="badges" id="badges"></div>
+    </section>
+  </div>
+  <div class="footer">Prototipo gratuito para aprender · Tus avances se guardan solo en este navegador.</div>
+</main>
+<div class="modal" id="ending" role="dialog" aria-modal="true" aria-labelledby="endtitle">
+  <div class="modal-card"><div class="big">🏆</div><h2 id="endtitle">¡Aventura completada!</h2><p id="endtext"></p><button class="primary" id="playagain">Jugar otra vez</button></div>
+</div>
+<script>
+const missions = [
+ {id:"morelia",name:"Morelia",emoji:"🏛️",x:222,y:128,guide:"Xóchitl, guía de historia",avatar:"👩🏽‍🎓",intro:"¡Llegamos a Morelia! Observa sus edificios y descubre por qué su centro histórico es tan especial.",title:"La ciudad de cantera rosa",desc:"Una viajera necesita identificar la capital de Michoacán antes de continuar su recorrido.",q:"¿Cuál es la capital de Michoacán?",answers:["Uruapan","Morelia","Zamora"],correct:1,explain:"¡Correcto! Morelia es la capital de Michoacán. Su centro histórico destaca por sus edificios de cantera rosa y es Patrimonio Mundial de la UNESCO.",badge:"🏛️ Explorador de historia",points:10},
+ {id:"patzcuaro",name:"Pátzcuaro",emoji:"🛶",x:278,y:198,guide:"Tata Pedro, guardián de las tradiciones",avatar:"🧓🏽",intro:"Bienvenido a la región del lago de Pátzcuaro. Aquí conocerás tradiciones que pasan de generación en generación.",title:"Una tradición viva",desc:"Tata Pedro te pide reconocer una celebración importante para muchas comunidades de la región.",q:"¿Qué celebración es especialmente conocida en la región del lago de Pátzcuaro?",answers:["Día de Muertos","Año Nuevo chino","La Tomatina"],correct:0,explain:"¡Así es! En distintas comunidades se realizan ceremonias y ofrendas para recordar a sus seres queridos. Las prácticas varían de una comunidad a otra.",badge:"🕯️ Guardián de tradiciones",points:10},
+ {id:"monarca",name:"Santuario de la monarca",emoji:"🦋",x:322,y:119,guide:"Marina, bióloga del bosque",avatar:"🧑🏻‍🔬",intro:"¡Mira esos árboles! Ayuda a Marina a proteger el bosque y a conocer a sus visitantes alados.",title:"Viajeras naranjas",desc:"Una mariposa necesita encontrar el lugar adecuado para pasar el invierno.",q:"¿Qué fenómeno natural atrae visitantes a los bosques de Michoacán?",answers:["La migración de la mariposa monarca","La aurora boreal","Los géiseres del desierto"],correct:0,explain:"¡Excelente! Cada año, mariposas monarca migran desde Norteamérica y pasan el invierno en bosques del centro de México, incluidos santuarios de Michoacán.",badge:"🦋 Protector de la naturaleza",points:10},
+ {id:"uruapan",name:"Uruapan",emoji:"🥑",x:190,y:240,guide:"Doña Tere, cocinera tradicional",avatar:"👩🏽‍🍳",intro:"¡Qué rico huele por aquí! Vamos a conocer ingredientes y platillos de la cocina michoacana.",title:"Sabores de Michoacán",desc:"Doña Tere está preparando comida tradicional y necesita que identifiques un platillo.",q:"¿Cuál de estos alimentos es tradicional de Michoacán?",answers:["Corundas","Cochinita pibil","Tacos al pastor"],correct:0,explain:"¡Correcto! Las corundas son una preparación tradicional de masa de maíz, normalmente envuelta en hojas. La gastronomía michoacana tiene muchas variedades regionales.",badge:"🌽 Explorador gastronómico",points:10},
+ {id:"artesania",name:"Taller artesanal",emoji:"🏺",x:147,y:169,guide:"Don Luis, maestro artesano",avatar:"🧑🏽‍🎨",intro:"En este taller se crean objetos con técnicas tradicionales. ¡Descubre de qué están hechos!",title:"Manos creadoras",desc:"Don Luis te muestra una cazuela hecha a mano y te pregunta por su material.",q:"¿Qué material se usa comúnmente en la alfarería tradicional?",answers:["Barro","Hielo","Cartón mojado"],correct:0,explain:"¡Muy bien! El barro se moldea y se cuece para crear cazuelas, ollas, figuras y muchas otras piezas artesanales. Las técnicas cambian según la comunidad.",badge:"🏺 Amigo de la artesanía",points:10}
+];
+let completed = new Set();
+let score = 0;
+let current = null;
+let answered = false;
+const $ = id => document.getElementById(id);
+function renderMap(){
+ $('pin-layer').innerHTML = missions.map((m,i)=>{
+  const done=completed.has(m.id), unlocked=i===0||completed.has(missions[i-1].id);
+  return `<g class="map-pin ${unlocked?'':'locked'}" data-id="${m.id}" tabindex="${unlocked?'0':'-1'}" role="button" aria-label="${m.name}${done?', completada':unlocked?', disponible':', bloqueada'}">
+   <circle cx="${m.x}" cy="${m.y}" r="19" fill="${done?'#e8b942':unlocked?'#2f7658':'#a8b0a7'}" stroke="#fffdf7" stroke-width="3"/>
+   <text x="${m.x}" y="${m.y+6}" text-anchor="middle" font-size="19">${done?'★':m.emoji}</text>
+  </g>`;
+ }).join('');
+ document.querySelectorAll('.map-pin').forEach(el=>{
+  const activate=()=>selectMission(el.dataset.id);
+  el.addEventListener('click',activate);
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate()}});
+ });
+ $('locations').innerHTML=missions.map((m,i)=>{
+  const done=completed.has(m.id), unlocked=i===0||completed.has(missions[i-1].id);
+  return `<button class="location" data-id="${m.id}" ${unlocked?'':'disabled'}><span class="emoji">${done?'⭐':unlocked?m.emoji:'🔒'}</span><span><strong>${m.name}</strong><small>${done?'Misión completada':unlocked?'Toca para explorar':'Completa la misión anterior'}</small></span></button>`;
+ }).join('');
+ document.querySelectorAll('.location:not(:disabled)').forEach(b=>b.addEventListener('click',()=>selectMission(b.dataset.id)));
+ $('score').textContent=score;$('done').textContent=completed.size;$('total').textContent=missions.length;
+ $('progressbar').style.width=(completed.size/missions.length*100)+'%';
+ $('badges').innerHTML=missions.map(m=>`<span class="badge ${completed.has(m.id)?'':'locked'}">${m.badge}</span>`).join('');
+}
+function selectMission(id){
+ const i=missions.findIndex(m=>m.id===id),m=missions[i];
+ if(i>0&&!completed.has(missions[i-1].id))return;
+ current=m;answered=false;
+ $('avatar').textContent=m.avatar;$('guide').textContent=m.guide;$('intro').textContent=m.intro;
+ if(completed.has(id)){
+  $('mission').innerHTML=`<p>✅ Ya completaste esta misión.</p><h3 class="quest-title">${m.title}</h3><p class="quest-desc">${m.explain}</p><button class="primary" id="nextMission">Continuar aventura →</button>`;
+  $('nextMission').onclick=()=>nextAvailable();
+  return;
+ }
+ $('mission').innerHTML=`<span class="badge">📍 ${m.name} · +${m.points} puntos</span><h3 class="quest-title">${m.title}</h3><p class="quest-desc">${m.desc}</p><strong>${m.q}</strong><div class="answers">${m.answers.map((a,i)=>`<button class="answer" data-answer="${i}">${String.fromCharCode(65+i)}. ${a}</button>`).join('')}</div><div id="feedback"></div>`;
+ document.querySelectorAll('.answer').forEach(b=>b.addEventListener('click',()=>answer(Number(b.dataset.answer))));
+}
+function answer(n){
+ if(answered)return;answered=true;
+ const m=current,correct=n===m.correct;
+ document.querySelectorAll('.answer').forEach((b,i)=>{b.disabled=true;if(i===m.correct)b.classList.add('correct');else if(i===n)b.classList.add('wrong')});
+ if(correct){score+=m.points;completed.add(m.id)}
+ $('feedback').innerHTML=`<div class="feedback"><strong>${correct?'🎉 ¡Respuesta correcta! +'+m.points+' puntos':'💡 ¡Sigue aprendiendo!'}</strong>${m.explain}</div><button class="primary" id="continue">${completed.size===missions.length?'Terminar aventura':'Continuar →'}</button>`;
+ $('continue').onclick=()=>{renderMap();if(completed.size===missions.length){$('endtext').textContent=`Ganaste ${score} puntos y reuniste las cinco insignias. ¡Gracias por explorar la cultura y naturaleza de Michoacán!`;$('ending').classList.add('show')}else nextAvailable()};
+ renderMap();
+}
+function nextAvailable(){const m=missions.find(x=>!completed.has(x.id));if(m)selectMission(m.id);else $('mission').innerHTML='<p>¡Has completado todas las misiones! Eres un explorador del conocimiento. 🏆</p>'}
+function reset(){completed=new Set();score=0;current=null;answered=false;$('ending').classList.remove('show');$('avatar').textContent='🧑🏽‍🌾';$('guide').textContent='Conoce a Xóchitl';$('intro').textContent='¡Hola, explorador! Soy Xóchitl. Te acompañaré por Michoacán.';$('mission').innerHTML='<p class="quest-desc">Elige un lugar del mapa para comenzar tu primera misión.</p><p>💡 Consejo: lee con atención cada pregunta. ¡Aprender también es parte de la aventura!</p>';renderMap()}
+$('reset').addEventListener('click',reset);$('playagain').addEventListener('click',reset);
+renderMap();
+</script>
+</body>
+</html>
